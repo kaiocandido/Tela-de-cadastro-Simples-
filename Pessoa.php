@@ -62,7 +62,7 @@ class Pessoa {
         }
     }
 
-    public function alterarPessa($dados){
+    public function alterar($dados){
         try{
             $sql = $this->conexao->prepare("UPDATE pessoa SET nome = :nome, imagem = :imagem WHERE id_pessoa = :id_pessoa)");
             $sql->bindValue(":nome", $dados['nome']);

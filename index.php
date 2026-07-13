@@ -12,6 +12,9 @@
 <body class="bg-light">
   <?php 
     require 'Pessoa.php';
+    require 'Imagem.php';
+
+    $imagem = new Imagem();
 
     $pessoa = new Pessoa();
 
@@ -23,6 +26,42 @@
       $caminhoImg = $tem_imagem  ? 'imagens/'.$imagem : '#';
 
     }
+
+    if(isset($_POST['NOME'])){
+      $dados['imagem'] = '';
+      $dados['nome'] = htmlspecialchars($_POST['nome']);
+      $resposta = $imagem->salvarImagem();
+
+      if(!empty($resposta['erro'])){
+        $erro = $resposta['erro'];
+      }else {
+        $dados['imagem'] = $resposta['imagem'];
+      }
+
+      if(empty($erro)){
+        
+        if(!empty($id_pessoa)){
+          $dados['id_pessoa'] = $id_pessoa;
+          $res = $pessoa->alterar($dados);
+        }else {
+          $id_pessoa = $pessoa->inserir($dados);
+
+          if(!empty($id_pessoa)){
+            $res = true;
+          }else{
+            $res = false;
+          }
+
+        }
+
+        if(!$res){
+          $erro = "erro ao salvar dados da pessoa";
+        }else {
+          header("location: lista_pessoas.php");
+        }
+      }
+
+    }
   ?>
   <div class="container py-5">
     <div class="row justify-content-center">
@@ -32,12 +71,17 @@
           <div class="card-body p-4">
             <h3 class="mb-4 text-center"><i class="bi bi-person-plus"></i> Novo Cadastro</h3>
             
-            <!-- Região de Erros -->
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-              <i class="bi bi-exclamation-triangle-fill me-2"></i>
-              erro
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
-            </div>
+            <?php 
+              if(!empty($erro)){
+              ?>
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <?php $erro?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+              </div>
+            <?php
+            }
+            ?>
 
             <form method="POST" enctype="multipart/form-data">
               <!-- Nome -->
